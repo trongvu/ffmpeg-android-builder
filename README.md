@@ -1,4 +1,4 @@
-# ffmpeg-android-builder
+# ffmpeg-android-builder [![Build Status](https://travis-ci.org/trongvu/ffmpeg-android-builder.svg?branch=master)](https://travis-ci.org/trongvu/ffmpeg-android-builder)
 Set of scripts to build ffmpeg binary for Android
 # Credits
 Original source was forked from [FFmpegMediaPlayer](https://github.com/wseemann/FFmpegMediaPlayer).  
