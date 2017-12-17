@@ -1,0 +1,14 @@
+language: c, cpp
+
+branches:
+  only:
+    - master
+
+script: ./mosquitto_android_cmake.sh
+
+notifications:
+  email:
+    recipients:
+      - vungoctrong@gmail.com
+    on_success: change
+    on_failure: always
