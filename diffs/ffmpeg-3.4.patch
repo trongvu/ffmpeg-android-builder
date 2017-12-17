@@ -1,0 +1,398 @@
+diff -urN a/configure b/configure
+--- a/configure	2017-10-15 22:59:36.000000000 +0700
++++ b/configure	2017-12-15 16:52:46.903840400 +0700
+@@ -3410,11 +3410,11 @@
+ SLIBPREF="lib"
+ SLIBSUF=".so"
+ SLIBNAME='$(SLIBPREF)$(FULLNAME)$(SLIBSUF)'
+-SLIBNAME_WITH_VERSION='$(SLIBNAME).$(LIBVERSION)'
+-SLIBNAME_WITH_MAJOR='$(SLIBNAME).$(LIBMAJOR)'
++SLIBNAME_WITH_VERSION='$(SLIBNAME)'
++SLIBNAME_WITH_MAJOR='$(SLIBNAME)'
+ LIB_INSTALL_EXTRA_CMD='$$(RANLIB) "$(LIBDIR)/$(LIBNAME)"'
+ SLIB_INSTALL_NAME='$(SLIBNAME_WITH_VERSION)'
+-SLIB_INSTALL_LINKS='$(SLIBNAME_WITH_MAJOR) $(SLIBNAME)'
++SLIB_INSTALL_LINKS=
+ VERSION_SCRIPT_POSTPROCESS_CMD="cat"
+ 
+ asflags_filter=echo
+diff -urN a/libavcodec/hevc_mvs.c b/libavcodec/hevc_mvs.c
+--- a/libavcodec/hevc_mvs.c	2017-10-15 22:59:37.000000000 +0700
++++ b/libavcodec/hevc_mvs.c	2017-12-15 16:52:46.903840400 +0700
+@@ -307,8 +307,8 @@
+     const int xB1    = x0 + nPbW - 1;
+     const int yB1    = y0 - 1;
+ 
+-    const int xB0    = x0 + nPbW;
+-    const int yB0    = y0 - 1;
++    const int xb0    = x0 + nPbW;
++    const int yb0    = y0 - 1;
+ 
+     const int xA0    = x0 - 1;
+     const int yA0    = y0 + nPbH;
+@@ -365,14 +365,14 @@
+     }
+ 
+     // above right spatial merge candidate
+-    is_available_b0 = AVAILABLE(cand_up_right, B0) &&
+-                      xB0 < s->ps.sps->width &&
+-                      PRED_BLOCK_AVAILABLE(B0) &&
+-                      !is_diff_mer(s, xB0, yB0, x0, y0);
++    is_available_b0 = AVAILABLE(cand_up_right, b0) &&
++                      xb0 < s->ps.sps->width &&
++                      PRED_BLOCK_AVAILABLE(b0) &&
++                      !is_diff_mer(s, xb0, yb0, x0, y0);
+ 
+     if (is_available_b0 &&
+-        !(is_available_b1 && COMPARE_MV_REFIDX(B0, B1))) {
+-        mergecandlist[nb_merge_cand] = TAB_MVF_PU(B0);
++        !(is_available_b1 && COMPARE_MV_REFIDX(b0, B1))) {
++        mergecandlist[nb_merge_cand] = TAB_MVF_PU(b0);
+         if (merge_idx == nb_merge_cand)
+             return;
+         nb_merge_cand++;
+@@ -588,7 +588,7 @@
+     MvField *tab_mvf = s->ref->tab_mvf;
+     int isScaledFlag_L0 = 0;
+     int availableFlagLXA0 = 1;
+-    int availableFlagLXB0 = 1;
++    int availableFlagLXb0 = 1;
+     int numMVPCandLX = 0;
+     int min_pu_width = s->ps.sps->min_pu_width;
+ 
+@@ -596,7 +596,7 @@
+     int is_available_a0;
+     int xA1, yA1;
+     int is_available_a1;
+-    int xB0, yB0;
++    int xb0, yb0;
+     int is_available_b0;
+     int xB1, yB1;
+     int is_available_b1;
+@@ -677,12 +677,12 @@
+ b_candidates:
+     // B candidates
+     // above right spatial merge candidate
+-    xB0    = x0 + nPbW;
+-    yB0    = y0 - 1;
++    xb0    = x0 + nPbW;
++    yb0    = y0 - 1;
+ 
+-    is_available_b0 =  AVAILABLE(cand_up_right, B0) &&
+-                       xB0 < s->ps.sps->width &&
+-                       PRED_BLOCK_AVAILABLE(B0);
++    is_available_b0 =  AVAILABLE(cand_up_right, b0) &&
++                       xb0 < s->ps.sps->width &&
++                       PRED_BLOCK_AVAILABLE(b0);
+ 
+     // above spatial merge candidate
+     xB1    = x0 + nPbW - 1;
+@@ -696,10 +696,10 @@
+ 
+     // above right spatial merge candidate
+     if (is_available_b0) {
+-        if (MP_MX(B0, pred_flag_index_l0, mxB)) {
++        if (MP_MX(b0, pred_flag_index_l0, mxB)) {
+             goto scalef;
+         }
+-        if (MP_MX(B0, pred_flag_index_l1, mxB)) {
++        if (MP_MX(b0, pred_flag_index_l1, mxB)) {
+             goto scalef;
+         }
+     }
+@@ -723,40 +723,40 @@
+             goto scalef;
+         }
+     }
+-    availableFlagLXB0 = 0;
++    availableFlagLXb0 = 0;
+ 
+ scalef:
+     if (!isScaledFlag_L0) {
+-        if (availableFlagLXB0) {
++        if (availableFlagLXb0) {
+             availableFlagLXA0 = 1;
+             mxA = mxB;
+         }
+-        availableFlagLXB0 = 0;
++        availableFlagLXb0 = 0;
+ 
+-        // XB0 and L1
++        // Xb0 and L1
+         if (is_available_b0) {
+-            availableFlagLXB0 = MP_MX_LT(B0, pred_flag_index_l0, mxB);
+-            if (!availableFlagLXB0)
+-                availableFlagLXB0 = MP_MX_LT(B0, pred_flag_index_l1, mxB);
++            availableFlagLXb0 = MP_MX_LT(b0, pred_flag_index_l0, mxB);
++            if (!availableFlagLXb0)
++                availableFlagLXb0 = MP_MX_LT(b0, pred_flag_index_l1, mxB);
+         }
+ 
+-        if (is_available_b1 && !availableFlagLXB0) {
+-            availableFlagLXB0 = MP_MX_LT(B1, pred_flag_index_l0, mxB);
+-            if (!availableFlagLXB0)
+-                availableFlagLXB0 = MP_MX_LT(B1, pred_flag_index_l1, mxB);
++        if (is_available_b1 && !availableFlagLXb0) {
++            availableFlagLXb0 = MP_MX_LT(B1, pred_flag_index_l0, mxB);
++            if (!availableFlagLXb0)
++                availableFlagLXb0 = MP_MX_LT(B1, pred_flag_index_l1, mxB);
+         }
+ 
+-        if (is_available_b2 && !availableFlagLXB0) {
+-            availableFlagLXB0 = MP_MX_LT(B2, pred_flag_index_l0, mxB);
+-            if (!availableFlagLXB0)
+-                availableFlagLXB0 = MP_MX_LT(B2, pred_flag_index_l1, mxB);
++        if (is_available_b2 && !availableFlagLXb0) {
++            availableFlagLXb0 = MP_MX_LT(B2, pred_flag_index_l0, mxB);
++            if (!availableFlagLXb0)
++                availableFlagLXb0 = MP_MX_LT(B2, pred_flag_index_l1, mxB);
+         }
+     }
+ 
+     if (availableFlagLXA0)
+         mvpcand_list[numMVPCandLX++] = mxA;
+ 
+-    if (availableFlagLXB0 && (!availableFlagLXA0 || mxA.x != mxB.x || mxA.y != mxB.y))
++    if (availableFlagLXb0 && (!availableFlagLXA0 || mxA.x != mxB.x || mxA.y != mxB.y))
+         mvpcand_list[numMVPCandLX++] = mxB;
+ 
+     //temporal motion vector prediction candidate
+diff -urN a/libavcodec/opus_pvq.c b/libavcodec/opus_pvq.c
+--- a/libavcodec/opus_pvq.c	2017-10-15 22:59:37.000000000 +0700
++++ b/libavcodec/opus_pvq.c	2017-12-15 16:52:46.903840400 +0700
+@@ -495,13 +495,13 @@
+     int imid = 0, iside = 0;
+     uint32_t N0 = N;
+     int N_B = N / blocks;
+-    int N_B0 = N_B;
+-    int B0 = blocks;
++    int N_b0 = N_B;
++    int b0 = blocks;
+     int time_divide = 0;
+     int recombine = 0;
+     int inv = 0;
+     float mid = 0, side = 0;
+-    int longblocks = (B0 == 1);
++    int longblocks = (b0 == 1);
+     uint32_t cm = 0;
+ 
+     if (N == 1) {
+@@ -533,7 +533,7 @@
+         /* Band recombining to increase frequency resolution */
+ 
+         if (lowband &&
+-            (recombine || ((N_B & 1) == 0 && tf_change < 0) || B0 > 1)) {
++            (recombine || ((N_B & 1) == 0 && tf_change < 0) || b0 > 1)) {
+             for (i = 0; i < N; i++)
+                 lowband_scratch[i] = lowband[i];
+             lowband = lowband_scratch;
+@@ -557,13 +557,13 @@
+             time_divide++;
+             tf_change++;
+         }
+-        B0 = blocks;
+-        N_B0 = N_B;
++        b0 = blocks;
++        N_b0 = N_B;
+ 
+         /* Reorganize the samples in time order instead of frequency order */
+-        if (B0 > 1 && (quant || lowband))
++        if (b0 > 1 && (quant || lowband))
+             celt_deinterleave_hadamard(pvq->hadamard_tmp, quant ? X : lowband,
+-                                       N_B >> recombine, B0 << recombine,
++                                       N_B >> recombine, b0 << recombine,
+                                        longblocks);
+     }
+ 
+@@ -605,7 +605,7 @@
+             if (quant) {
+                 if (stereo && N > 2)
+                     ff_opus_rc_enc_uint_step(rc, itheta, qn / 2);
+-                else if (stereo || B0 > 1)
++                else if (stereo || b0 > 1)
+                     ff_opus_rc_enc_uint(rc, itheta, qn + 1);
+                 else
+                     ff_opus_rc_enc_uint_tri(rc, itheta, qn);
+@@ -620,7 +620,7 @@
+             } else {
+                 if (stereo && N > 2)
+                     itheta = ff_opus_rc_dec_uint_step(rc, qn / 2);
+-                else if (stereo || B0 > 1)
++                else if (stereo || b0 > 1)
+                     itheta = ff_opus_rc_dec_uint(rc, qn+1);
+                 else
+                     itheta = ff_opus_rc_dec_uint_tri(rc, qn);
+@@ -725,7 +725,7 @@
+ 
+             /* Give more bits to low-energy MDCTs than they would
+              * otherwise deserve */
+-            if (B0 > 1 && !stereo && (itheta & 0x3fff)) {
++            if (b0 > 1 && !stereo && (itheta & 0x3fff)) {
+                 if (itheta > 8192)
+                     /* Rough approximation for pre-echo masking */
+                     delta -= delta >> (4 - duration);
+@@ -764,13 +764,13 @@
+                 cmt = rec(pvq, f, rc, band, Y, NULL, N, sbits, blocks, next_lowband2,
+                           duration, NULL, next_level, gain * side, NULL,
+                           fill >> blocks);
+-                cm |= cmt << ((B0 >> 1) & (stereo - 1));
++                cm |= cmt << ((b0 >> 1) & (stereo - 1));
+             } else {
+                 /* For a stereo split, the high bits of fill are always zero,
+                  * so no folding will be done to the side. */
+                 cm = rec(pvq, f, rc, band, Y, NULL, N, sbits, blocks, next_lowband2,
+                          duration, NULL, next_level, gain * side, NULL, fill >> blocks);
+-                cm <<= ((B0 >> 1) & (stereo - 1));
++                cm <<= ((b0 >> 1) & (stereo - 1));
+                 rebalance = sbits - (rebalance - f->remaining2);
+                 if (rebalance > 3 << 3 && itheta != 16384)
+                     mbits += rebalance - (3 << 3);
+@@ -841,13 +841,13 @@
+         int k;
+ 
+         /* Undo the sample reorganization going from time order to frequency order */
+-        if (B0 > 1)
++        if (b0 > 1)
+             celt_interleave_hadamard(pvq->hadamard_tmp, X, N_B >> recombine,
+-                                     B0 << recombine, longblocks);
++                                     b0 << recombine, longblocks);
+ 
+         /* Undo time-freq changes that we did earlier */
+-        N_B = N_B0;
+-        blocks = B0;
++        N_B = N_b0;
++        blocks = b0;
+         for (k = 0; k < time_divide; k++) {
+             blocks >>= 1;
+             N_B <<= 1;
+diff -urN a/libavutil/common.h b/libavutil/common.h
+--- a/libavutil/common.h	2017-09-12 07:51:35.000000000 +0700
++++ b/libavutil/common.h	2017-12-15 16:52:46.903840400 +0700
+@@ -26,6 +26,14 @@
+ #ifndef AVUTIL_COMMON_H
+ #define AVUTIL_COMMON_H
+ 
++#ifdef __cplusplus
++#   define __STDC_CONSTANT_MACROS
++#ifdef _STDINT_H
++#   undef _STDINT_H
++#endif
++#   include <stdint.h>
++#endif
++
+ #if defined(__cplusplus) && !defined(__STDC_CONSTANT_MACROS) && !defined(UINT64_C)
+ #error missing -D__STDC_CONSTANT_MACROS / #define __STDC_CONSTANT_MACROS
+ #endif
+diff -urN a/libavutil/timer.h b/libavutil/timer.h
+--- a/libavutil/timer.h	2017-10-15 22:59:38.000000000 +0700
++++ b/libavutil/timer.h	2017-12-15 16:53:32.881532236 +0700
+@@ -35,7 +35,108 @@
+ # include <unistd.h> // read(3)
+ # include <sys/ioctl.h>
+ # include <asm/unistd.h>
+-# include <linux/perf_event.h>
++#endif
++#ifndef __ANDROID__
++#include <linux/perf_event.h> // perf_event_attr, PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES
++#else
++//include time.h for definition of __u32 & __u64
++# include <sys/time.h>
++// Android NDK doesn't have perf_event.h header :(
++// copy&paste from http://lxr.free-electrons.com/source/include/uapi/linux/perf_event.h
++enum perf_type_id {
++ PERF_TYPE_HARDWARE = 0,
++ PERF_TYPE_SOFTWARE = 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ PERF_TYPE_TRACEPOINT = 2,
++ PERF_TYPE_HW_CACHE = 3,
++ PERF_TYPE_RAW = 4,
++ PERF_TYPE_BREAKPOINT = 5,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ PERF_TYPE_MAX,
++};
++
++enum perf_hw_id {
++ PERF_COUNT_HW_CPU_CYCLES = 0,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ PERF_COUNT_HW_INSTRUCTIONS = 1,
++ PERF_COUNT_HW_CACHE_REFERENCES = 2,
++ PERF_COUNT_HW_CACHE_MISSES = 3,
++ PERF_COUNT_HW_BRANCH_INSTRUCTIONS = 4,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ PERF_COUNT_HW_BRANCH_MISSES = 5,
++ PERF_COUNT_HW_BUS_CYCLES = 6,
++ PERF_COUNT_HW_STALLED_CYCLES_FRONTEND = 7,
++ PERF_COUNT_HW_STALLED_CYCLES_BACKEND = 8,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ PERF_COUNT_HW_REF_CPU_CYCLES = 9,
++ PERF_COUNT_HW_MAX,
++};
++
++struct perf_event_attr {
++ __u32 type;
++ __u32 size;
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ __u64 config;
++ union {
++ __u64 sample_period;
++ __u64 sample_freq;
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ };
++ __u64 sample_type;
++ __u64 read_format;
++ __u64 disabled : 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ inherit : 1,
++ pinned : 1,
++ exclusive : 1,
++ exclude_user : 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ exclude_kernel : 1,
++ exclude_hv : 1,
++ exclude_idle : 1,
++ mmap : 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ comm : 1,
++ freq : 1,
++ inherit_stat : 1,
++ enable_on_exec : 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ task : 1,
++ watermark : 1,
++ precise_ip : 2,
++ mmap_data : 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ sample_id_all : 1,
++ exclude_host : 1,
++ exclude_guest : 1,
++ exclude_callchain_kernel : 1,
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ exclude_callchain_user : 1,
++ mmap2 : 1,
++ __reserved_1 : 40;
++ union {
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ __u32 wakeup_events;
++ __u32 wakeup_watermark;
++ };
++ __u32 bp_type;
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ union {
++ __u64 bp_addr;
++ __u64 config1;
++ };
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ union {
++ __u64 bp_len;
++ __u64 config2;
++ };
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++ __u64 branch_sample_type;
++ __u64 sample_regs_user;
++ __u32 sample_stack_user;
++ __u32 __reserved_2;
++/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
++};
+ #endif
+ 
+ #include <stdlib.h>
