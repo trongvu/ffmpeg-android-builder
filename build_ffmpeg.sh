@@ -16,7 +16,7 @@ export TARGET=$1
 
 HOST_ARCH=`uname -m`
 HOST_OS=`uname -s`
-HOST_OS=${HOST_OS,,}
+HOST=`echo $HOST | tr [:upper:] [:lower:]`
 
 ARM_PLATFORM=$NDK/platforms/android-9/arch-arm/
 ARM_PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/$HOST_OS-$HOST_ARCH
