@@ -13,4 +13,4 @@ Please take a look into original repo for more information.
 Just trigger "build-ffmpeg.sh" then relax.  
 Output file can be found @ "ffmpeg-android" under working directory.
 # Prebuilt
-TBD
+Refer to [Release tab](https://github.com/trongvu/ffmpeg-android-builder/releases/)
