@@ -13,4 +13,8 @@ Please take a look into original repo for more information.
 Just trigger "build-ffmpeg.sh" then relax.  
 Output file can be found @ "ffmpeg-android" under working directory.
 # Prebuilt
-Refer to [Release tab](https://github.com/trongvu/ffmpeg-android-builder/releases/)
+Refer to [Release tab](https://github.com/trongvu/ffmpeg-android-builder/releases/) . 
+# Troubleshooting
+1. NDK version should be r14d. It's not working with r16d.  
+2. For Mac OS users, please manually download Android NDK & export NDK variable to ndk path.
+
